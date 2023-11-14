@@ -12,23 +12,37 @@
                     @TempData["SuccessMessage"]
                 </div>
             }
+
+            <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert">
+               
+            </div>
+
             <form method="post" asp-controller="Home" asp-action="SignUp">
                 <div class="row mb-3">
                     <label for="userName" class="form-label">User Name</label>
                     <input type="text" class="form-control" id="userName" asp-for="UserName">
+                    <span class="text-danger" asp-validation-for="UserName"></span>
                 </div>
                 <div class="row mb-3">
                     <label for="email" class="form-label">Email address</label>
                     <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="email" asp-for="Email">
                     <div id="email" class="form-text">We'll never share your email with anyone else.</div>
+                    <span class="text-danger" asp-validation-for="Email"></span>
                 </div>
                 <div class="row mb-3">
                     <label for="phoneNumber" class="form-label">Phone Number</label>
                     <input type="text" class="form-control" id="phoneNumber" asp-for="PhoneNumber">
+                    <span class="text-danger" asp-validation-for="PhoneNumber"></span>
                 </div>
                 <div class="row mb-3">
                     <label for="password" class="form-label">Password</label>
                     <input type="password" class="form-control" id="password" asp-for="Password">
+                    <span class="text-danger" asp-validation-for="Password"></span>
+                </div>
+                <div class="row mb-3">
+                    <label for="passwordConfirm" class="form-label">Password Confirm</label>
+                    <input type="password" class="form-control" id="passwordConfirm" asp-for="PasswordConfirm">
+                    <span class="text-danger" asp-validation-for="PasswordConfirm"></span>
                 </div>
                 @*
                 <div class="mb-3 form-check">

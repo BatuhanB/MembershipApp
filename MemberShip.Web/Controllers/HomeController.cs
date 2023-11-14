@@ -35,10 +35,12 @@ namespace MemberShip.Web.Controllers
         {
             if (ModelState.IsValid)
             {
-                var user = new AppUser();
-                user.UserName = model.UserName;
-                user.Email = model.Email;
-                user.PhoneNumber = model.PhoneNumber;
+                var user = new AppUser
+                {
+                    UserName = model.UserName,
+                    Email = model.Email,
+                    PhoneNumber = model.PhoneNumber
+                };
 
                 var result = await _userManager.CreateAsync(user, model.Password);
 
