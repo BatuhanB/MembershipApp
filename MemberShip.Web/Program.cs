@@ -8,16 +8,6 @@ builder.Services.AddControllersWithViews();
 
 builder.Services.ConfigurePersistence(builder.Configuration);
 
-builder.Services.AddIdentity<AppUser,AppRoles>(opt =>
-{
-    opt.Password.RequiredUniqueChars = 0;
-    opt.Password.RequiredLength = 5;
-    opt.Password.RequireDigit = false;
-    opt.Password.RequireLowercase = false;
-    opt.Password.RequireUppercase = false;
-    opt.Password.RequireNonAlphanumeric = false;
-}).AddEntityFrameworkStores<AppDbContext>();
-
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -41,6 +31,6 @@ app.MapControllerRoute(
 
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Home}/{action=SignUp}/{id?}");
+    pattern: "{controller=Home}/{action=Index}/{id?}");
 
 app.Run();
