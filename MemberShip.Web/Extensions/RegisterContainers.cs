@@ -1,4 +1,5 @@
 ﻿using MemberShip.Web.CustomValidations;
+using MemberShip.Web.Localizations;
 using MemberShip.Web.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -19,7 +20,10 @@ namespace MemberShip.Web.Extensions
                 opt.Password.RequireLowercase = false;
                 opt.Password.RequireUppercase = false;
                 opt.Password.RequireNonAlphanumeric = false;
-            }).AddPasswordValidator<PasswordValidations>().AddEntityFrameworkStores<AppDbContext>();
+            }).AddPasswordValidator<PasswordValidations>()
+            .AddUserValidator<UserValidations>()
+            .AddErrorDescriber<LocalizationIdentityResultDescriber>()
+            .AddEntityFrameworkStores<AppDbContext>();
 
         }
     }
