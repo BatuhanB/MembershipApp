@@ -3,16 +3,20 @@ using MemberShip.Web.ViewModels;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
+using MemberShip.Web.Extensions;
 
 namespace MemberShip.Web.Controllers
 {
     public class HomeController : Controller
     {
         private readonly UserManager<AppUser> _userManager;
+        private readonly SignInManager<AppUser> _signInManager;
 
-        public HomeController(UserManager<AppUser> userManager)
+        public HomeController(UserManager<AppUser> userManager,
+            SignInManager<AppUser> signInManager)
         {
             _userManager = userManager;
+            _signInManager = signInManager;
         }
 
         public IActionResult Index()
@@ -50,13 +54,40 @@ namespace MemberShip.Web.Controllers
                     return RedirectToAction("SignUp");
                 }
                 var errors = result.Errors.Select(e => e.Description).ToList();
-                foreach (var error in errors)
-                {
-                    ModelState.AddModelError(string.Empty, error);
-                    return View();
-                }
+                ModelState.AddModelErrorList(errors);
+                return View();
             }
             return View();
+        }
+
+        public IActionResult SignIn()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> SignIn(SignInViewModel model, string? returnUrl = null)
+        {
+            returnUrl ??= Url.Action("Index", "Home");
+            var user = await _userManager.FindByEmailAsync(model.Email);
+            if (user == null)
+            {
+                ModelState.AddModelError(string.Empty, "Please check your information!");
+                return View();
+            }
+            var result = await _signInManager.PasswordSignInAsync(user!, model.Password, model.RememberMe, false);
+            if (result.Succeeded)
+            {
+                return Redirect(returnUrl!);
+            }
+            ModelState.AddModelError(string.Empty, "Login attempt have failed!");
+            return View();
+        }
+
+        public async Task<IActionResult> Logout()
+        {
+            await _signInManager.SignOutAsync();
+            return RedirectToAction("Index","Home");
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

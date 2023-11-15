@@ -1,4 +1,12 @@
-﻿<!DOCTYPE html>
+﻿@{
+    if (Context.User.Identity.IsAuthenticated)
+    {
+        // User is authenticated, you can include authenticated user-specific content here
+        var username = Context.User.Identity.Name; // Get the username or any other user information
+    }
+}
+
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -30,7 +38,18 @@
                         </li>
                     </ul>
                 </div>
-                <a class="btn btn-success" asp-area="" asp-controller="Home" asp-action="SignUp">Sign Up</a>
+                @if (Context.User.Identity.IsAuthenticated)
+                {
+                    <a class="btn btn-success mx-1" asp-area="" asp-controller="Home" asp-action="Logout">Sign Out</a>
+                    <!-- Additional authenticated user-specific content goes here -->
+                }
+
+                @if (!Context.User.Identity.IsAuthenticated)
+                {
+                    <a class="btn btn-success mx-1" asp-area="" asp-controller="Home" asp-action="SignIn">Sign In</a>
+                    <!-- Additional authenticated user-specific content goes here -->
+                    <a class="btn btn-success" asp-area="" asp-controller="Home" asp-action="SignUp">Sign Up</a>
+                }
             </div>
         </nav>
     </header>
