@@ -42,9 +42,8 @@
                 <partial name="PartialViews/_NavbarUserLogout"></partial>
                 @if (!Context.User.Identity.IsAuthenticated)
                 {
-                    <a class="btn btn-success mx-1" asp-area="" asp-controller="Home" asp-action="SignIn">Sign In</a>
-                    <!-- Additional authenticated user-specific content goes here -->
-                    <a class="btn btn-success" asp-area="" asp-controller="Home" asp-action="SignUp">Sign Up</a>
+                    <a class="btn btn-outline-success mx-1" asp-area="" asp-controller="Home" asp-action="SignIn">Sign In</a>
+                    <a class="btn btn-outline-warning" asp-area="" asp-controller="Home" asp-action="SignUp">Sign Up</a>
                 }
             </div>
         </nav>
