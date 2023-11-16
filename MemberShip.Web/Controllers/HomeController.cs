@@ -75,12 +75,19 @@ namespace MemberShip.Web.Controllers
                 ModelState.AddModelError(string.Empty, "Please check your information!");
                 return View();
             }
-            var result = await _signInManager.PasswordSignInAsync(user!, model.Password, model.RememberMe, false);
+            var result = await _signInManager.PasswordSignInAsync(user!, model.Password, model.RememberMe, true);
             if (result.Succeeded)
             {
                 return Redirect(returnUrl!);
             }
-            ModelState.AddModelError(string.Empty, "Login attempt have failed!");
+
+            if (result.IsLockedOut)
+            {
+                ModelState.AddModelError(string.Empty, "Have to wait 1 minute the unlock fail attempt!");
+                return View();
+            }
+            var failedAttemptCount = await _userManager.GetAccessFailedCountAsync(user);
+            ModelState.AddModelError(string.Empty, $"Login attempt have failed {failedAttemptCount} times!");
             return View();
         }
 

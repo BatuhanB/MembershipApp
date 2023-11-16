@@ -20,6 +20,8 @@ namespace MemberShip.Web.Extensions
                 opt.Password.RequireLowercase = false;
                 opt.Password.RequireUppercase = false;
                 opt.Password.RequireNonAlphanumeric = false;
+                opt.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(1);
+                opt.Lockout.MaxFailedAccessAttempts = 3;
             }).AddPasswordValidator<PasswordValidations>()
             .AddUserValidator<UserValidations>()
             .AddErrorDescriber<LocalizationIdentityResultDescriber>()
