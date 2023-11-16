@@ -11,7 +11,7 @@ builder.Services.ConfigurePersistence(builder.Configuration);
 builder.Services.ConfigureApplicationCookie(opt =>
 {
     opt.LoginPath = new PathString("/Home/Signin");
-    opt.LogoutPath = new PathString("/Home/Index");
+    opt.LogoutPath = new PathString("/Home/Logout");
     var cookieBuilder = new CookieBuilder()
     {
         Name = "MembershipCookie",
@@ -35,6 +35,8 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();
+
+app.UseAuthentication();
 
 app.UseAuthorization();
 

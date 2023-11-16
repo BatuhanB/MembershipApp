@@ -91,10 +91,9 @@ namespace MemberShip.Web.Controllers
             return View();
         }
 
-        public async Task<IActionResult> Logout()
+        public async Task Logout()
         {
             await _signInManager.SignOutAsync();
-            return RedirectToAction("Index","Home");
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
