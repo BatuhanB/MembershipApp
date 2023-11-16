@@ -1,5 +1,5 @@
 using MemberShip.Web.Extensions;
-using MemberShip.Web.Models;
+using System.Xml.Linq;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -7,6 +7,19 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllersWithViews();
 
 builder.Services.ConfigurePersistence(builder.Configuration);
+
+builder.Services.ConfigureApplicationCookie(opt =>
+{
+    opt.LoginPath = new PathString("/Home/Signin");
+    opt.LogoutPath = new PathString("/Home/Index");
+    var cookieBuilder = new CookieBuilder()
+    {
+        Name = "MembershipCookie",
+    };
+    opt.Cookie = cookieBuilder;
+    opt.ExpireTimeSpan = TimeSpan.FromDays(1);
+    opt.SlidingExpiration = true;
+});
 
 var app = builder.Build();
 

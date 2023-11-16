@@ -1,0 +1,15 @@
+﻿@if (Context.User!.Identity!.IsAuthenticated)
+{
+    <ul class="navbar-nav">
+        <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                @User.Identity!.Name
+            </a>
+            <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                <li>
+                    <a class="dropdown-item btn btn-success mx-1" asp-area="" asp-controller="Home" asp-action="Logout">Sign Out</a>
+                </li>
+            </ul>
+        </li>
+    </ul>
+}
