@@ -2,7 +2,9 @@
 @{
     ViewData["Title"] = "SignIn";
 }
-
+@section Scripts{
+    @await Html.PartialAsync("_ValidationScriptsPartial")
+}
 <div class="container">
     <div class="row" style="margin-top:40px;">
         <div class="col-md-4 offset-md-4">
@@ -32,9 +34,10 @@
                     <label class="form-check-label" for="rememberMe">Check me out</label>
                 </div>
                 <div class="row mb-3">
-                    <div class="col-md-8">
-                        <button type="submit" class="btn btn-primary">Submit</button>
-                    </div>
+                    <button type="submit" class="btn btn-primary">Submit</button>
+                </div>
+                <div class="row mb-3">
+                    <a class="btn btn-danger" asp-controller="Home" asp-action="ForgetPassword">Forget Password</a>
                 </div>
             </form>
         </div>
