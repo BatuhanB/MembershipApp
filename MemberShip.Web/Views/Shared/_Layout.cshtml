@@ -1,5 +1,5 @@
 ﻿@{
-    if (Context.User.Identity.IsAuthenticated)
+    if (Context.User.Identity!.IsAuthenticated)
     {
         // User is authenticated, you can include authenticated user-specific content here
         var username = Context.User.Identity.Name; // Get the username or any other user information

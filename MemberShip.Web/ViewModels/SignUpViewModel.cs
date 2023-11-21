@@ -4,19 +4,19 @@ namespace MemberShip.Web.ViewModels;
 public class SignUpViewModel
 {
     [Required(ErrorMessage ="This field can not be empty!")]
-    public string UserName { get; set; }
+    public required string UserName { get; set; }
 
     [EmailAddress(ErrorMessage ="Format is not correct!")]
     [Required(ErrorMessage = "This field can not be empty!")]
-    public string Email { get; set; }
+    public required string Email { get; set; }
 
     [Required(ErrorMessage = "This field can not be empty!")]
-    public string PhoneNumber { get; set; }
+    public required string PhoneNumber { get; set; }
 
     [Required(ErrorMessage = "This field can not be empty!")]
-    public string Password { get; set; }
+    public required string Password { get; set; }
 
     [Compare("Password",ErrorMessage ="Password does not match!")]
     [Required(ErrorMessage = "This field can not be empty!")]
-    public string PasswordConfirm { get; set; }
+    public required string PasswordConfirm { get; set; }
 }
