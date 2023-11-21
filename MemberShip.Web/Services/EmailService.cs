@@ -8,7 +8,7 @@ namespace MemberShip.Web.Services
 {
     public class EmailService : IEmailService
     {
-        private readonly EmailSettingOptions _emailSettings = new();
+        private readonly EmailSettingOptions _emailSettings;
         private readonly UserManager<AppUser> _userManager;
 
         public EmailService(IOptions<EmailSettingOptions> options,
@@ -43,7 +43,7 @@ namespace MemberShip.Web.Services
                                 </head>
                                 <body style=""font-family: Arial, sans-serif;"">
                                 
-                                    <p>Dear {user.UserName},</p>
+                                    <p>Dear {user!.UserName},</p>
                                 
                                     <p>We received a request to reset the password for your account. If you did not make this request, please ignore this email.    Otherwise,     click    the      link  below    to     reset your password:</p>
                                 

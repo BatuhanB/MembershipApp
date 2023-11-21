@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
 using MemberShip.Web.Extensions;
 using MemberShip.Web.Services;
+using NuGet.Common;
 
 namespace MemberShip.Web.Controllers
 {
@@ -121,15 +122,53 @@ namespace MemberShip.Web.Controllers
             }
 
             string passwordResetToken = await _userManager.GeneratePasswordResetTokenAsync(hasUser);
-            var passwordResetLink = Url.Action("ResetPassword", "Home", new { userId = hasUser.Id, Token = passwordResetToken },HttpContext.Request.Scheme);
+            var passwordResetLink = Url.Action("ResetPassword", "Home", new { userId = hasUser.Id, Token = passwordResetToken }, HttpContext.Request.Scheme);
 
-            await _emailService.SendResetEmail(passwordResetLink, hasUser.Email);
+            await _emailService.SendResetEmail(passwordResetLink!, hasUser.Email!);
 
             TempData["SuccessMessage"] = "Reset password link has been sent to your email";
             return RedirectToAction(nameof(ForgetPassword));
         }
 
+        public IActionResult ResetPassword(string userId, string token)
+        {
+            TempData["token"] = token;
+            TempData["userId"] = userId;
 
+            return View();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> ResetPassword(ResetPasswordViewModel model)
+        {
+            var token = TempData["token"];
+            var userId = TempData["userId"];
+
+            if(userId == null || token == null)
+            {
+                throw new Exception("An error occured!");
+            }
+
+            var hasUser = await _userManager.FindByIdAsync(userId.ToString()!);
+            if (hasUser == null)
+            {
+                ModelState.AddModelError(string.Empty, "No user has found!");
+                return View();
+            }
+            var result = await _userManager.ResetPasswordAsync(hasUser, token.ToString()!, model.Password);
+
+            if(result.Succeeded)
+            {
+                TempData["SuccessMessage"] = "Password has been successfully reset";
+                return View();
+            }
+            var error = result.Errors.Select(x=>x.Description).ToList();
+            if (error.Any())
+            {
+                ModelState.AddModelErrorList(error);
+            }
+            return View();
+        }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()

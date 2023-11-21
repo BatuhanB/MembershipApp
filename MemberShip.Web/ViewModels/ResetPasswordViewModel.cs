@@ -2,10 +2,13 @@
 
 namespace MemberShip.Web.ViewModels
 {
-    public class ForgetPasswordViewModel
+    public class ResetPasswordViewModel
     {
-        [EmailAddress(ErrorMessage = "Format is not correct!")]
         [Required(ErrorMessage = "This field can not be empty!")]
-        public required string Email { get; set; }
+        public required string Password { get; set; }
+
+        [Compare("Password", ErrorMessage = "Password does not match!")]
+        [Required(ErrorMessage = "This field can not be empty!")]
+        public required string PasswordConfirm { get; set; }
     }
 }
