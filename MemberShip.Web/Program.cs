@@ -1,5 +1,4 @@
 using MemberShip.Web.Extensions;
-using System.Xml.Linq;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,6 +11,7 @@ builder.Services.ConfigureApplicationCookie(opt =>
 {
     opt.LoginPath = new PathString("/Home/Signin");
     opt.LogoutPath = new PathString("/Home/Logout");
+    opt.AccessDeniedPath = new PathString("/Home/AccessDenied");
     var cookieBuilder = new CookieBuilder()
     {
         Name = "MembershipCookie",

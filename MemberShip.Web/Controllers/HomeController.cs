@@ -29,6 +29,11 @@ namespace MemberShip.Web.Controllers
             return View();
         }
 
+        public IActionResult AccessDenied()
+        {
+            return View();
+        }
+
         public IActionResult SignUp()
         {
             return View();
