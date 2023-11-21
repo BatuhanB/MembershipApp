@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
 using MemberShip.Web.Extensions;
+using MemberShip.Web.Services;
 
 namespace MemberShip.Web.Controllers
 {
@@ -11,12 +12,15 @@ namespace MemberShip.Web.Controllers
     {
         private readonly UserManager<AppUser> _userManager;
         private readonly SignInManager<AppUser> _signInManager;
+        private readonly IEmailService _emailService;
 
         public HomeController(UserManager<AppUser> userManager,
-            SignInManager<AppUser> signInManager)
+            SignInManager<AppUser> signInManager,
+            IEmailService emailService)
         {
             _userManager = userManager;
             _signInManager = signInManager;
+            _emailService = emailService;
         }
 
         public IActionResult Index()
@@ -100,6 +104,32 @@ namespace MemberShip.Web.Controllers
         {
             await _signInManager.SignOutAsync();
         }
+
+        public IActionResult ForgetPassword()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> ForgetPassword(ForgetPasswordViewModel model)
+        {
+            var hasUser = await _userManager.FindByEmailAsync(model.Email);
+            if (hasUser == null)
+            {
+                ModelState.AddModelError(string.Empty, $" {model.Email} user has not found");
+                return View();
+            }
+
+            string passwordResetToken = await _userManager.GeneratePasswordResetTokenAsync(hasUser);
+            var passwordResetLink = Url.Action("ResetPassword", "Home", new { userId = hasUser.Id, Token = passwordResetToken },HttpContext.Request.Scheme);
+
+            await _emailService.SendResetEmail(passwordResetLink, hasUser.Email);
+
+            TempData["SuccessMessage"] = "Reset password link has been sent to your email";
+            return RedirectToAction(nameof(ForgetPassword));
+        }
+
+
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
