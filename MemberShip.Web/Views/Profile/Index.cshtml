@@ -1,0 +1,63 @@
+﻿@model UserProfileViewModel;
+@{
+    ViewData["Title"] = "Index";
+}
+@section Scripts{
+    @await Html.PartialAsync("_ValidationScriptsPartial")
+}
+<style>
+    body {
+        background-color: #f8f9fa;
+    }
+
+    .profile-edit-card {
+        border-radius: 15px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.15);
+    }
+
+    .profile-edit-card-header {
+        background-color: #008000;
+        color: white;
+        border-radius: 15px 15px 0 0;
+        padding: 20px;
+    }
+
+    .profile-edit-card-body {
+        padding: 20px;
+    }
+</style>
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-6">
+            <div class="card profile-edit-card">
+                <div class="card-header profile-edit-card-header text-center">
+                    <h2>Edit Profile</h2>
+                </div>
+                @if (TempData["SuccessMessage"] != null)
+                {
+                    <div class="alert alert-success" role="alert">
+                        @TempData["SuccessMessage"]
+                    </div>
+                }
+                <div class="card-body profile-edit-card-body">
+                    <form method="put" asp-controller="" asp-action="">
+                        <div class="mb-3">
+                            <label for="username" class="form-label">Username</label>
+                            <input type="text" class="form-control" id="username" value="@Model.Name" asp-for="Name">
+                        </div>
+                        <div class="mb-3">
+                            <label for="email" class="form-label">Email address</label>
+                            <input type="email" class="form-control" id="email" value="@Model.Email" asp-for="Email">
+                        </div>
+                        <div class="mb-3">
+                            <label for="phoneNumber" class="form-label">Phone Number</label>
+                            <input type="text" class="form-control" id="phoneNumber" value="@Model.PhoneNumber" asp-for="PhoneNumber">
+                        </div>
+                        <button type="submit" class="btn btn-outline-success w-100">Update Profile</button>
+                    </form>
+                    <a class="btn btn-link float-end mt-3" asp-controller="Profile" asp-action="ChangePassword">For Update Password</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
