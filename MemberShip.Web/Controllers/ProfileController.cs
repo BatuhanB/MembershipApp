@@ -40,24 +40,26 @@ namespace MemberShip.Web.Controllers
         [HttpPost]
         public async Task<IActionResult> ChangePassword(UserPasswordChangeViewModel model)
         {
-            var user = await _userManager.FindByNameAsync(User.Identity!.Name!);
             if (!ModelState.IsValid)
             {
                 return View();
             }
 
-            var checkPassword = await _userManager.CheckPasswordAsync(user!, model.OldPassword);
-            if (!checkPassword)
+            var result = FindUserByName(User.Identity!.Name!).Result.result;
+            var user = FindUserByName(User.Identity!.Name!).Result.user;
+            if (!result)
+            {
+                return View();
+            }
+
+            if (!await CheckOldPassword(user!, model.OldPassword))
             {
                 ModelState.AddModelError(string.Empty, "Current Password is not correct");
                 return View();
             }
 
-            var result = await _userManager.ChangePasswordAsync(user!, model.OldPassword, model.NewPassword);
-            if (!result.Succeeded)
+            if (!await ChangePassword(user, model.OldPassword, model.NewPassword))
             {
-                var err = result.Errors.Select(x => x.Description).ToList();
-                ModelState.AddModelErrorList(err);
                 return View();
             }
 
@@ -69,10 +71,32 @@ namespace MemberShip.Web.Controllers
             return View();
         }
 
+        private async Task<bool> CheckOldPassword(AppUser user, string password)
+        {
+            return await _userManager.CheckPasswordAsync(user, password);
+        }
 
-        //private async Task<IActionResult> CheckIfPasswordCorrect(string password)
-        //{
-            
-        //}
+        private async Task<bool> ChangePassword(AppUser user, string oldPassword, string newPassword)
+        {
+            var result = await _userManager.ChangePasswordAsync(user!, oldPassword, newPassword);
+            if (!result.Succeeded)
+            {
+                var err = result.Errors.Select(x => x.Description).ToList();
+                ModelState.AddModelErrorList(err);
+                return false;
+            }
+            return true;
+        }
+
+        private async Task<(bool result, AppUser user)> FindUserByName(string userName)
+        {
+            var user = await _userManager.FindByNameAsync(userName);
+            if (user == null)
+            {
+                ModelState.AddModelError(string.Empty, "User not found! - Please check your information!");
+                return (false, user!);
+            }
+            return (true, user!);
+        }
     }
 }
