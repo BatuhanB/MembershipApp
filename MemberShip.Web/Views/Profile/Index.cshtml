@@ -16,7 +16,7 @@
     }
 
     .profile-edit-card-header {
-        background-color: #008000;
+        background-color: #f7f5f5;
         color: white;
         border-radius: 15px 15px 0 0;
         padding: 20px;
@@ -28,10 +28,32 @@
 </style>
 <div class="container py-5">
     <div class="row justify-content-center">
-        <div class="col-lg-6">
+        <div class="col-md-3">
+            <div class="card profile-edit-card">
+                <div class="card-body profile-edit-card-body">
+                    <form method="post" asp-controller="Profile" asp-action="UpdateUserProfile" enctype="multipart/form-data">
+                        <img width="175" height="177" class="mx-auto d-block" src="@Model.Picture" />
+                        <input type="file" class="form-control" value="@Model.Picture" asp-for="Picture">
+                        <div class="mb-3">
+                            <label for="city" class="form-label">City</label>
+                            <input type="text" class="form-control" value="@Model.City" asp-for="City">
+                        </div>
+                        <div class="mb-3">
+                            <label for="birthDate" class="form-label">Birth Day</label>
+                            <input type="date" class="form-control" value="@Model.BirthDate" asp-for="BirthDate">
+                        </div>
+                        <div class="mb-3">
+                            <label for="gender" class="form-label">Gender</label>
+                            <select class="form-control" asp-for="Gender" asp-items="ViewBag.GenderList" data-toggle="dropdown"></select>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-8">
             <div class="card profile-edit-card">
                 <div class="card-header profile-edit-card-header text-center">
-                    <h2>Edit Profile</h2>
+                    <h2 class="h1" style="color:black;">Edit Profile</h2>
                 </div>
                 @if (TempData["SuccessMessage"] != null)
                 {
@@ -40,7 +62,7 @@
                     </div>
                 }
                 <div class="card-body profile-edit-card-body">
-                    <form method="put" asp-controller="" asp-action="">
+                    <form method="post" asp-controller="Profile" asp-action="UpdateUserProfile" enctype="multipart/form-data">
                         <div class="mb-3">
                             <label for="username" class="form-label">Username</label>
                             <input type="text" class="form-control" id="username" value="@Model.Name" asp-for="Name">
@@ -55,7 +77,7 @@
                         </div>
                         <button type="submit" class="btn btn-outline-success w-100">Update Profile</button>
                     </form>
-                    <a class="btn btn-link float-end mt-3" asp-controller="Profile" asp-action="ChangePassword">For Update Password</a>
+                    <a class="btn btn-link float-end mt-1" asp-controller="Profile" asp-action="ChangePassword">Update Password</a>
                 </div>
             </div>
         </div>

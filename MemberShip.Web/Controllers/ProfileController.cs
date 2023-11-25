@@ -1,9 +1,11 @@
 ﻿using MemberShip.Web.Extensions;
 using MemberShip.Web.Models;
+using MemberShip.Web.Models.Enums;
 using MemberShip.Web.ViewModels.User;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace MemberShip.Web.Controllers
 {
@@ -22,12 +24,16 @@ namespace MemberShip.Web.Controllers
 
         public async Task<IActionResult> Index()
         {
+            ViewBag.GenderList = new SelectList(Enum.GetNames(typeof(Gender)));
             var currentUser = await _userManager.FindByNameAsync(User.Identity!.Name!);
             var userProfile = new UserProfileViewModel()
             {
                 Email = currentUser!.Email!,
                 Name = currentUser.UserName!,
-                PhoneNumber = currentUser.PhoneNumber
+                PhoneNumber = currentUser.PhoneNumber!,
+                City = currentUser.City,
+                BirthDate = currentUser.BirthDate,     
+                Gender = currentUser.Gender,
             };
             return View(userProfile);
         }
