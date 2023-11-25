@@ -4,6 +4,7 @@ using MemberShip.Web.Models;
 using MemberShip.Web.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.FileProviders;
 
 namespace MemberShip.Web.Extensions
 {
@@ -38,6 +39,7 @@ namespace MemberShip.Web.Extensions
             .AddDefaultTokenProviders()
             .AddEntityFrameworkStores<AppDbContext>();
 
+            services.AddSingleton<IFileProvider>(new PhysicalFileProvider(Directory.GetCurrentDirectory()));
         }
     }
 }

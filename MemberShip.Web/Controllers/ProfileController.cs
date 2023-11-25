@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.Extensions.FileProviders;
 
 namespace MemberShip.Web.Controllers
 {
@@ -14,12 +15,15 @@ namespace MemberShip.Web.Controllers
     {
         private readonly UserManager<AppUser> _userManager;
         private readonly SignInManager<AppUser> _signInManager;
+        private readonly IFileProvider _fileProvider;
 
         public ProfileController(UserManager<AppUser> userManager,
-            SignInManager<AppUser> signInManager)
+            SignInManager<AppUser> signInManager,
+            IFileProvider fileProvider)
         {
             _userManager = userManager;
             _signInManager = signInManager;
+            _fileProvider = fileProvider;
         }
 
         public async Task<IActionResult> Index()
@@ -32,10 +36,61 @@ namespace MemberShip.Web.Controllers
                 Name = currentUser.UserName!,
                 PhoneNumber = currentUser.PhoneNumber!,
                 City = currentUser.City,
-                BirthDate = currentUser.BirthDate,     
+                BirthDate = currentUser.BirthDate,
                 Gender = currentUser.Gender,
+                ShowPicture = currentUser.Picture
             };
             return View(userProfile);
+        }
+
+        public async Task<IActionResult> UpdateUserProfile(UserProfileViewModel model)
+        {
+            if (!ModelState.IsValid) return View(model);
+            var user = await _userManager.FindByNameAsync(User.Identity!.Name!);
+
+            user.UserName = model.Name;
+            user.Email = model.Email;
+            user.PhoneNumber = model.PhoneNumber;
+            user.City = model.City;
+            user.BirthDate = model.BirthDate;
+            user.Gender = (Gender)model.Gender;
+
+            if (model.Picture != null && model.Picture.Length > 0)
+            {
+                // TODO: Check if user post image exist in our folder do not create again
+                // TODO: When update profile gender and birtdate does not shows in input
+                var wwwrootFolder = _fileProvider.GetDirectoryContents("wwwroot");
+                var imgDirectory = wwwrootFolder.First(x => x.Name == "img").PhysicalPath! + "/user-profile-pictures";
+                var randomFileName = $"{Guid.NewGuid()}{Path.GetExtension(model.Picture.FileName)}";
+                var newPath = Path.Combine(imgDirectory, randomFileName);
+                using var stream = new FileStream(newPath, FileMode.Create);
+                await model.Picture.CopyToAsync(stream);
+                user.Picture = randomFileName;
+            }
+
+            var result = await _userManager.UpdateAsync(user);
+
+            if (!result.Succeeded)
+            {
+                ModelState.AddModelErrorList(result.Errors);
+                return View();
+            }
+            var userProfile = new UserProfileViewModel()
+            {
+                Email = user!.Email!,
+                Name = user.UserName!,
+                PhoneNumber = user.PhoneNumber!,
+                City = user.City,
+                BirthDate = user.BirthDate,
+                Gender = user.Gender,
+                ShowPicture = user.Picture
+            };
+
+            await _userManager.UpdateSecurityStampAsync(user);
+            await _signInManager.SignOutAsync();
+            await _signInManager.SignInAsync(user, true);
+            TempData["SuccessMessage"] = "User credentials has been changed successfully!";
+            return View("Index",userProfile);
         }
 
         public IActionResult ChangePassword()

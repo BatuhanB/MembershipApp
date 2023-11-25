@@ -20,5 +20,6 @@ namespace MemberShip.Web.ViewModels.User
         public Gender? Gender { get; set; }
 
         public IFormFile? Picture { get; set; }
+        public string? ShowPicture { get; set; }
     }
 }
