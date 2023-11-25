@@ -25,32 +25,44 @@
     .profile-edit-card-body {
         padding: 20px;
     }
+
+    .image-upload > input {
+        display: none;
+    }
+
+    .image-upload {
+        position: relative;
+        width: 200px;
+        height: 200px;
+    }
+
+    .image-container img {
+        width: 100%;
+        height: 100%;
+    }
+
+    .change-button {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        display: none;
+        padding: 10px 20px;
+        background-color: #007BFF;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+
+    .image-upload:hover .change-button {
+        display: block;
+    }
+
 </style>
 <div class="container py-5">
     <div class="row justify-content-center">
-        <div class="col-md-3">
-            <div class="card profile-edit-card">
-                <div class="card-body profile-edit-card-body">
-                    <form method="post" asp-controller="Profile" asp-action="UpdateUserProfile" enctype="multipart/form-data">
-                        <img width="175" height="177" class="mx-auto d-block" src="@Model.Picture" />
-                        <input type="file" class="form-control" value="@Model.Picture" asp-for="Picture">
-                        <div class="mb-3">
-                            <label for="city" class="form-label">City</label>
-                            <input type="text" class="form-control" value="@Model.City" asp-for="City">
-                        </div>
-                        <div class="mb-3">
-                            <label for="birthDate" class="form-label">Birth Day</label>
-                            <input type="date" class="form-control" value="@Model.BirthDate" asp-for="BirthDate">
-                        </div>
-                        <div class="mb-3">
-                            <label for="gender" class="form-label">Gender</label>
-                            <select class="form-control" asp-for="Gender" asp-items="ViewBag.GenderList" data-toggle="dropdown"></select>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-        <div class="col-lg-8">
+        <div class="col-lg-10">
             <div class="card profile-edit-card">
                 <div class="card-header profile-edit-card-header text-center">
                     <h2 class="h1" style="color:black;">Edit Profile</h2>
@@ -63,21 +75,64 @@
                 }
                 <div class="card-body profile-edit-card-body">
                     <form method="post" asp-controller="Profile" asp-action="UpdateUserProfile" enctype="multipart/form-data">
-                        <div class="mb-3">
-                            <label for="username" class="form-label">Username</label>
-                            <input type="text" class="form-control" id="username" value="@Model.Name" asp-for="Name">
+                        <div class="row">
+                            <div class="col-md-5 image-upload">
+                                <label for="file-input">
+                                    @if (Model.ShowPicture == null)
+                                    {
+                                        if ((int)Model!.Gender! == 1)
+                                        {
+                                            <img class="img-thumbnail mx-auto d-block" src="~/img/avatars/female-avatar-removebg-preview.png" />
+                                        }
+                                        if ((int)Model!.Gender! == 0)
+                                        {
+                                            <img class="img-thumbnail mx-auto d-block" src="~/img/avatars/male-avatar.png" />
+                                        }
+                                    }
+                                    @if (Model.ShowPicture != null)
+                                    {
+                                        <img class="img-thumbnail mx-auto d-block" src="~/img/user-profile-pictures/@Model.ShowPicture" />
+                                    }
+                                </label>
+                                <input type="file" class="form-control change-button" id="file-input" value="@Model.Picture" asp-for="Picture">
+                                @* <button class="btn btn-success ">Change Image</button> *@
+                            </div>
+                            <div class="col-md-9">
+                                <div class="mb-3">
+                                    <label for="username" class="form-label">Username</label>
+                                    <input type="text" class="form-control" id="username" value="@Model.Name" asp-for="Name">
+                                    <span class="text-danger" asp-validation-for="Name"></span>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="email" class="form-label">Email address</label>
+                                    <input type="email" class="form-control" id="email" value="@Model.Email" asp-for="Email">
+                                    <span class="text-danger" asp-validation-for="Email"></span>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="phoneNumber" class="form-label">Phone Number</label>
+                                    <input type="text" class="form-control" id="phoneNumber" value="@Model.PhoneNumber" asp-for="PhoneNumber">
+                                    <span class="text-danger" asp-validation-for="PhoneNumber"></span>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="city" class="form-label">City</label>
+                                    <input type="text" class="form-control" value="@Model.City" asp-for="City">
+                                    <span class="text-danger" asp-validation-for="City"></span>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="birthDate" class="form-label">Birth Date</label>
+                                    <input class="form-control" value="@Model.BirthDate" asp-for="BirthDate">
+                                    <span class="text-danger" asp-validation-for="BirthDate"></span>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="gender" class="form-label">Gender</label>
+                                    <select class="form-control" asp-for="Gender" asp-items="ViewBag.GenderList" data-toggle="dropdown"></select>
+                                    <span class="text-danger" asp-validation-for="Gender"></span>
+                                </div>
+                                <button type="submit" class="btn btn-outline-success w-100">Update Profile</button>
+                                <a class="btn btn-link float-end mt-1" asp-controller="Profile" asp-action="ChangePassword">To Update Password</a>
+                            </div>
                         </div>
-                        <div class="mb-3">
-                            <label for="email" class="form-label">Email address</label>
-                            <input type="email" class="form-control" id="email" value="@Model.Email" asp-for="Email">
-                        </div>
-                        <div class="mb-3">
-                            <label for="phoneNumber" class="form-label">Phone Number</label>
-                            <input type="text" class="form-control" id="phoneNumber" value="@Model.PhoneNumber" asp-for="PhoneNumber">
-                        </div>
-                        <button type="submit" class="btn btn-outline-success w-100">Update Profile</button>
                     </form>
-                    <a class="btn btn-link float-end mt-1" asp-controller="Profile" asp-action="ChangePassword">Update Password</a>
                 </div>
             </div>
         </div>
