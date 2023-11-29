@@ -1,4 +1,5 @@
 ﻿@model UserProfileViewModel;
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
 @{
     ViewData["Title"] = "Index";
 }
@@ -59,6 +60,11 @@
         display: block;
     }
 
+    .profile-image{
+        width:175px;
+        height:175px;
+    }
+
 </style>
 <div class="container py-5">
     <div class="row justify-content-center">
@@ -69,29 +75,29 @@
                 </div>
                 @if (TempData["SuccessMessage"] != null)
                 {
-                    <div class="alert alert-success" role="alert">
+                    <div class="alert alert-success text-center" role="alert">
                         @TempData["SuccessMessage"]
                     </div>
                 }
                 <div class="card-body profile-edit-card-body">
                     <form method="post" asp-controller="Profile" asp-action="UpdateUserProfile" enctype="multipart/form-data">
                         <div class="row">
-                            <div class="col-md-5 image-upload">
+                            <div class="col-md-5 image-upload mx-auto">
                                 <label for="file-input">
                                     @if (Model.ShowPicture == null)
                                     {
                                         if ((int)Model!.Gender! == 1)
                                         {
-                                            <img class="img-thumbnail mx-auto d-block" src="~/img/avatars/female-avatar-removebg-preview.png" />
+                                            <img class="rounded mx-auto d-block profile-image" src="~/img/avatars/female-avatar-removebg-preview.png" />
                                         }
                                         if ((int)Model!.Gender! == 0)
                                         {
-                                            <img class="img-thumbnail mx-auto d-block" src="~/img/avatars/male-avatar.png" />
+                                            <img class="rounded mx-auto d-block profile-image" src="~/img/avatars/male-avatar.png" />
                                         }
                                     }
                                     @if (Model.ShowPicture != null)
                                     {
-                                        <img class="img-thumbnail mx-auto d-block" src="~/img/user-profile-pictures/@Model.ShowPicture" />
+                                        <img class="rounded mx-auto d-block profile-image" src="~/img/user-profile-pictures/@Model.ShowPicture" />
                                     }
                                 </label>
                                 <input type="file" class="form-control change-button" id="file-input" value="@Model.Picture" asp-for="Picture">
@@ -120,12 +126,12 @@
                                 </div>
                                 <div class="mb-3">
                                     <label for="birthDate" class="form-label">Birth Date</label>
-                                    <input class="form-control" value="@Model.BirthDate" asp-for="BirthDate">
+                                    <input type="date" class="form-control" value="@Model.BirthDate" asp-for="BirthDate" asp-format="{0:MM/dd/yyyy}">
                                     <span class="text-danger" asp-validation-for="BirthDate"></span>
                                 </div>
                                 <div class="mb-3">
                                     <label for="gender" class="form-label">Gender</label>
-                                    <select class="form-control" asp-for="Gender" asp-items="ViewBag.GenderList" data-toggle="dropdown"></select>
+                                    <select class="form-control" asp-for="Gender" asp-items="Html.GetEnumSelectList<Gender>()" data-toggle="dropdown"></select>
                                     <span class="text-danger" asp-validation-for="Gender"></span>
                                 </div>
                                 <button type="submit" class="btn btn-outline-success w-100">Update Profile</button>

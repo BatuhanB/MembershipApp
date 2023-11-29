@@ -5,7 +5,6 @@ using MemberShip.Web.ViewModels.User;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.FileProviders;
 
 namespace MemberShip.Web.Controllers
@@ -15,11 +14,11 @@ namespace MemberShip.Web.Controllers
     {
         private readonly UserManager<AppUser> _userManager;
         private readonly SignInManager<AppUser> _signInManager;
-        private readonly IFileProvider _fileProvider;
+        private readonly IWebHostEnvironment _webHostEnvironment;
 
         public ProfileController(UserManager<AppUser> userManager,
             SignInManager<AppUser> signInManager,
-            IFileProvider fileProvider)
+            IWebHostEnvironment _webHostEnvironment)
         {
             _userManager = userManager;
             _signInManager = signInManager;
@@ -28,7 +27,7 @@ namespace MemberShip.Web.Controllers
 
         public async Task<IActionResult> Index()
         {
-            ViewBag.GenderList = new SelectList(Enum.GetNames(typeof(Gender)));
+            //ViewBag.GenderList = new SelectList(Enum.GetNames(typeof(Gender)));
             var currentUser = await _userManager.FindByNameAsync(User.Identity!.Name!);
             var userProfile = new UserProfileViewModel()
             {
@@ -43,6 +42,7 @@ namespace MemberShip.Web.Controllers
             return View(userProfile);
         }
 
+        [HttpPost]
         public async Task<IActionResult> UpdateUserProfile(UserProfileViewModel model)
         {
             if (!ModelState.IsValid) return View(model);
@@ -59,13 +59,18 @@ namespace MemberShip.Web.Controllers
             {
                 // TODO: Check if user post image exist in our folder do not create again
                 // TODO: When update profile gender and birtdate does not shows in input
-                var wwwrootFolder = _fileProvider.GetDirectoryContents("wwwroot");
-                var imgDirectory = wwwrootFolder.First(x => x.Name == "img").PhysicalPath! + "/user-profile-pictures";
+                var wwwrootFolder = _webHostEnvironment.ContentRootPath;
+                var imgDirectory = Path.Combine(wwwrootFolder, "img", "user-profile-pictures");
                 var randomFileName = $"{Guid.NewGuid()}{Path.GetExtension(model.Picture.FileName)}";
                 var newPath = Path.Combine(imgDirectory, randomFileName);
-                using var stream = new FileStream(newPath, FileMode.Create);
-                await model.Picture.CopyToAsync(stream);
-                user.Picture = randomFileName;
+
+                if (!System.IO.File.Exists(newPath))
+                {
+                    using var stream = new FileStream(newPath, FileMode.Create, FileAccess.Write, FileShare.None, 1024 * 1024);
+                    await model.Picture.CopyToAsync(stream);
+                    await stream.FlushAsync();
+                    user.Picture = randomFileName;
+                }
             }
 
             var result = await _userManager.UpdateAsync(user);
@@ -90,7 +95,7 @@ namespace MemberShip.Web.Controllers
             await _signInManager.SignOutAsync();
             await _signInManager.SignInAsync(user, true);
             TempData["SuccessMessage"] = "User credentials has been changed successfully!";
-            return View("Index",userProfile);
+            return View("Index", userProfile);
         }
 
         public IActionResult ChangePassword()
