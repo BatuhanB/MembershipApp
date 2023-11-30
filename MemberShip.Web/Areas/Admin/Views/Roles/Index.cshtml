@@ -1,0 +1,50 @@
+﻿@model IEnumerable<RoleListViewModel>;
+@{
+    ViewData["Title"] = "Index";
+}
+
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-6 offset-md-3">
+            <h1 class="text-center">Role List</h1>
+            @if (TempData["SuccessMessage"] != null)
+            {
+                <div class="alert alert-success text-center" role="alert">
+                    @TempData["SuccessMessage"]
+                </div>
+            }
+            <div class="mb-3">
+                <table class="table table-light">
+                    <thead>
+                        <tr>
+                            <th>Id</th>
+                            <th>Name</th>
+                            <th>Update</th>
+                            <th>Delete</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var role in Model)
+                        {
+                            <tr>
+                                <th>@role.Id</th>
+                                <th>@role.Name</th>
+                                <th>
+                                    @* asp-route-id="@role.Id" *@
+                                    <a class="btn btn-warning" asp-area="Admin" asp-action="Update" asp-controller="Roles" >Update</a>
+                                </th>
+                                <th>
+                                    <a class="btn btn-danger" asp-area="Admin" asp-action="Delete" asp-controller="Roles" asp-route-id="@role.Id">Delete</a>
+                                </th>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+
+                <a asp-action="CreateRole" asp-controller="Roles" class="btn btn-success"> Create Role</a>
+            </div>
+        </div>
+    </div>
+</div>
+
