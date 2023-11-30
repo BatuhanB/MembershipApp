@@ -5,7 +5,6 @@ using MemberShip.Web.ViewModels.User;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.FileProviders;
 
 namespace MemberShip.Web.Controllers
 {
@@ -18,11 +17,11 @@ namespace MemberShip.Web.Controllers
 
         public ProfileController(UserManager<AppUser> userManager,
             SignInManager<AppUser> signInManager,
-            IWebHostEnvironment _webHostEnvironment)
+            IWebHostEnvironment webHostEnvironment)
         {
             _userManager = userManager;
             _signInManager = signInManager;
-            _fileProvider = fileProvider;
+            _webHostEnvironment = webHostEnvironment;
         }
 
         public async Task<IActionResult> Index()
@@ -53,24 +52,26 @@ namespace MemberShip.Web.Controllers
             user.PhoneNumber = model.PhoneNumber;
             user.City = model.City;
             user.BirthDate = model.BirthDate;
-            user.Gender = (Gender)model.Gender;
+            user.Gender = (Gender)model!.Gender!;
 
             if (model.Picture != null && model.Picture.Length > 0)
             {
-                // TODO: Check if user post image exist in our folder do not create again
-                // TODO: When update profile gender and birtdate does not shows in input
+                // TODO: When update profile birthdate does not shows in input
                 var wwwrootFolder = _webHostEnvironment.ContentRootPath;
                 var imgDirectory = Path.Combine(wwwrootFolder, "img", "user-profile-pictures");
-                var randomFileName = $"{Guid.NewGuid()}{Path.GetExtension(model.Picture.FileName)}";
-                var newPath = Path.Combine(imgDirectory, randomFileName);
+                var fileName = $"{model.Picture.FileName}{Path.GetExtension(model.Picture.FileName)}";
 
-                if (!System.IO.File.Exists(newPath))
+                var newPath = Path.Combine(imgDirectory, fileName);
+
+                if (System.IO.File.Exists(newPath))
                 {
-                    using var stream = new FileStream(newPath, FileMode.Create, FileAccess.Write, FileShare.None, 1024 * 1024);
-                    await model.Picture.CopyToAsync(stream);
-                    await stream.FlushAsync();
-                    user.Picture = randomFileName;
+                    fileName = Guid.NewGuid().ToString() + fileName;
                 }
+
+                using var stream = new FileStream(newPath, FileMode.Create, FileAccess.Write, FileShare.None, 1024 * 1024);
+                await model.Picture.CopyToAsync(stream);
+                await stream.FlushAsync();
+                user.Picture = fileName;
             }
 
             var result = await _userManager.UpdateAsync(user);
