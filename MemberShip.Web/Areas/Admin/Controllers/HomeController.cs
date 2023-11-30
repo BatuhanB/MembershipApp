@@ -26,7 +26,6 @@ namespace MemberShip.Web.Areas.Admin.Controllers
         public async Task<IActionResult> UserList()
         {
             var result = await _userManager.Users.ToListAsync();
-
             var userViewModelList = result.Select(x => new UserViewModel
             {
                 Id = x.Id,

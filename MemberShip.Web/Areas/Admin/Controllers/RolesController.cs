@@ -72,7 +72,7 @@ namespace MemberShip.Web.Areas.Admin.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        
+
         public async Task<IActionResult> Delete(string id)
         {
             var role = await _roleManager.FindByIdAsync(id);
@@ -83,9 +83,9 @@ namespace MemberShip.Web.Areas.Admin.Controllers
             }
             var result = await _roleManager.DeleteAsync(role);
 
-            if(!result.Succeeded)
+            if (!result.Succeeded)
             {
-                throw new Exception(result.Errors.Select(x=>x.Description).First());
+                throw new Exception(result.Errors.Select(x => x.Description).First());
             }
 
             TempData["SuccessMessage"] = "Role have been deleted successfully!";
@@ -93,5 +93,71 @@ namespace MemberShip.Web.Areas.Admin.Controllers
             return RedirectToAction(nameof(Index));
         }
 
+        public async Task<IActionResult> AssignRole(string userId)
+        {
+            var user = await _userManager.FindByIdAsync(userId);
+
+            if (user == null)
+            {
+                throw new Exception("User has not found!");
+            }
+            var roles = await _roleManager.Roles.ToListAsync();
+
+            var roleViewModel = new List<AssignRoleViewModel>();
+            var userRoles = await _userManager.GetRolesAsync(user);
+
+
+            ViewBag.userName = user.UserName;
+            ViewBag.userId = user.Id;
+
+            foreach (var role in roles)
+            {
+                var roleModel = new AssignRoleViewModel()
+                {
+                    RoleId = role.Id,
+                    Name = role.Name!
+                };
+
+                if (userRoles.Contains(role.Name!))
+                {
+                    roleModel.Exists = true;
+                }
+                roleViewModel.Add(roleModel);
+            }
+            return View(roleViewModel);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> AssignRole(string userId, List<AssignRoleViewModel> model)
+        {
+            var addedRoleNames = new List<string>();
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user == null)
+            {
+                throw new Exception("User has not found!");
+            }
+            var result = new IdentityResult();
+            foreach (var role in model)
+            {
+                if (role.Exists)
+                {
+                    result = await _userManager.AddToRoleAsync(user, role.Name);
+                    addedRoleNames.Add(role.Name);
+                }
+                else
+                {
+                    result = await _userManager.RemoveFromRoleAsync(user, role.Name);
+                }
+            }
+            if (!result.Succeeded)
+            {
+                ModelState.AddModelErrorList(result.Errors);
+                return View();
+            }
+
+            TempData["SuccessMessage"] = $"Role have been added to {user.UserName} successfully!";
+
+            return RedirectToAction("UserList", "Home");
+        }
     }
 }
