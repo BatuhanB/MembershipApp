@@ -31,8 +31,7 @@
                                 <th>@role.Id</th>
                                 <th>@role.Name</th>
                                 <th>
-                                    @* asp-route-id="@role.Id" *@
-                                    <a class="btn btn-warning" asp-area="Admin" asp-action="Update" asp-controller="Roles" >Update</a>
+                                    <a class="btn btn-warning" asp-area="Admin" asp-action="Update" asp-controller="Roles" asp-route-id="@role.Id">Update</a>
                                 </th>
                                 <th>
                                     <a class="btn btn-danger" asp-area="Admin" asp-action="Delete" asp-controller="Roles" asp-route-id="@role.Id">Delete</a>
