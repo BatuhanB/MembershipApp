@@ -1,7 +1,5 @@
 ﻿using MemberShip.Web.Models.Enums;
-using Microsoft.AspNetCore.Mvc.TagHelpers;
 using Microsoft.AspNetCore.Razor.TagHelpers;
-using System.Text.Encodings.Web;
 
 namespace MemberShip.Web.TagHelpers
 {
